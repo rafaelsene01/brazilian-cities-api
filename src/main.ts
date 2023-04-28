@@ -13,6 +13,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({
       logger: {
+        level: 'silent',
         transport: {
           target: 'pino-pretty',
           options: {

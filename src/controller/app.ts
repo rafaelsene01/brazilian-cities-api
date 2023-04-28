@@ -15,14 +15,9 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('/a')
+  @Get('/state')
   async findAll() {
-    const cacheStatus: URL[] = await this.cacheManager.get('all-status');
-    if (cacheStatus) return cacheStatus;
-
-    const status = await this.appService.getHello();
-    this.cacheManager.set('all-status', status, 30);
-
-    return status;
+    const cacheState = await this.cacheManager.get('states');
+    return cacheState;
   }
 }
