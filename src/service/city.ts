@@ -39,7 +39,8 @@ export class CityService {
       this.cacheManager.set(`state.cities`, stateAndCities, this.ttl);
       this.logger.log('-- Estados/Cidades atualizado --');
     } catch (_) {
-      this.logger.error('Atualização das cidades');
+      this.logger.error('Atualização das cidades - retentativa em 5s');
+      setTimeout(() => this.updateCities(payload), 5000);
     }
   }
 

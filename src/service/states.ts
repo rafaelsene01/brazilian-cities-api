@@ -24,7 +24,8 @@ export class StatesService {
   private async updateStates() {
     const [error, states] = await this.getStates();
     if (error) {
-      this.logger.error('Atualização dos estados');
+      this.logger.error('Atualização dos estados - retentativa em 5s');
+      setTimeout(() => this.updateStates(), 5000);
     } else if (states) {
       this.cacheManager.set('states', states, this.ttl);
       this.logger.log('-- Estados atualizado --');
