@@ -4,35 +4,42 @@ import { Cron } from '@nestjs/schedule';
 import axios from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class StatesService {
   readonly logger: Logger;
   readonly ttl: number;
 
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {
+  constructor(
+    private eventEmitter: EventEmitter2,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {
     this.logger = new Logger();
-    this.ttl = 600000;
+    this.ttl = 4200000; // 70min
   }
 
   @Cron('0 0 0 * * *')
   @OnEvent('get.states')
-  private async handleCron() {
-    const [error, states] = await this.getAllStates();
+  private async updateStates() {
+    const [error, states] = await this.getStates();
     if (error) {
-      this.logger.error('Erro na busca dos estados');
+      this.logger.error('Atualização dos estados');
     } else if (states) {
       this.cacheManager.set('states', states, this.ttl);
+      this.logger.log('-- Estados atualizado --');
+      this.eventEmitter.emit('get.cities', states);
     }
   }
 
-  @Cron('0 */5 * * * *')
+  @Cron('0 50 * * * *')
   private async cacheStates() {
     const states = await this.cacheManager.get('states');
     if (states) this.cacheManager.set('states', states, this.ttl);
+    this.logger.log('-- cache(states) estendido --');
   }
 
-  async getAllStates() {
+  async getStates() {
     try {
       const { data } = await axios.get(
         'https://servicodados.ibge.gov.br/api/v1/localidades/estados',

@@ -8,6 +8,7 @@ import compression from '@fastify/compress';
 
 import { AppModule } from './module';
 
+// https://servicodados.ibge.gov.br/api/docs/localidades
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,

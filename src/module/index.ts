@@ -1,5 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from '../controller';
+import {
+  AppController,
+  StateController,
+  CityController,
+  AllController,
+} from '../controller';
 import {
   AppService,
   CityService,
@@ -18,7 +23,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     }),
     ScheduleModule.forRoot(),
   ],
-  controllers: [AppController],
+  controllers: [AppController, StateController, CityController, AllController],
   providers: [AppService, StartService, StatesService, CityService],
 })
 export class AppModule {}
